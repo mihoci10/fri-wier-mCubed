@@ -5,7 +5,6 @@ from time import sleep
 
 
 class Extractor:
-    WEB_DRIVER_LOCATION = "./geckodriver.exe"
 
     def __init__(self, load_time: float = 5) -> None:
         self.load_time: float = load_time
@@ -16,5 +15,9 @@ class Extractor:
 
     def run(self, URL: str) -> None:
         with webdriver.Firefox(options=self.firefox_options) as driver: 
+            
             driver.get(URL)
+            sleep(self.load_time)
+
             content = driver.page_source
+            print(content)
