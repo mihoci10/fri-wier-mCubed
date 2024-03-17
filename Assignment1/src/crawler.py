@@ -33,5 +33,6 @@ class Crawler:
 
             print(f'Selected URL: {cur_link}')
             extractor.run(cur_link)
+            extractor.extract_links_from_file('Assignment1\web-content.txt')
 
             
