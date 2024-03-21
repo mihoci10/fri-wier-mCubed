@@ -4,8 +4,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from time import sleep
 from bs4 import BeautifulSoup
-import re
-
 
 class Extractor:
 
@@ -16,14 +14,14 @@ class Extractor:
         # firefox_options.add_argument("--headless")
         self.firefox_options.add_argument("user-agent=fri-ieps-mCubed")
 
+        self.content = None
+
     def run(self, URL: str) -> None:
+
         with webdriver.Firefox(options=self.firefox_options) as driver: 
             driver.get(URL)
             sleep(self.load_time)
-            content = driver.page_source
-
-            with open('Assignment1/web-content.txt', 'a', encoding='utf-8') as file:
-                file.write(content)
+            self.content = driver.page_source
             
     def extract_links_from_html(self, html_content):
         soup = BeautifulSoup(html_content, 'html.parser')
