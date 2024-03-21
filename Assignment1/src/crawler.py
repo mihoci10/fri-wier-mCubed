@@ -9,12 +9,12 @@ from urllib.parse import urlparse
 class Crawler:
 
     def __init__(self, worker_count: int = 1, default_access_period: float = 5.0) -> None:
-        self.frontier: list[str] = ['https://www.google.si', 'https://www.youtube.com', 'https://ucilnica.fri.uni-lj.si/']
+        self.frontier: list[str] = ['https://www.google.si', 'https://www.google.si', 'https://www.youtube.com', 'https://ucilnica.fri.uni-lj.si/']
         self.worker_count: int = worker_count
         self.access_period: dict[str, float] = {}
         self.last_access_times: dict[str, float] = {}
         self.default_access_period: float = default_access_period
-        self.master_lock = threading.Lock()
+        self.master_lock = threading.RLock()
         self.terminate: bool = False
 
     def run(self) -> None:
@@ -30,7 +30,10 @@ class Crawler:
             cur_link = None
             with self.master_lock:
                 i = 0
-                while (i < len(self.frontier) and not self._can_access_url(self.frontier[i])):
+                while (i < len(self.frontier)):
+                    IP = self._get_ip_from_URL(self.frontier[i])
+                    if self._can_access_IP(IP):
+                        break
                     i += 1
                 if (i != len(self.frontier)):
                     cur_link = self.frontier.pop(i)
@@ -40,34 +43,34 @@ class Crawler:
 
             print(f'Selected URL: {cur_link}')
 
-            self._access_URL(cur_link)
+            IP = self._get_ip_from_URL(cur_link)
+            self._access_IP(IP)
+
             extractor.run(cur_link)
 
-    def _can_access_url(self, URL):
-        try:
-            server_IP = socket.gethostbyname(urlparse(URL).hostname)
-        except Exception as e:
-            print(e)
-            return False
+    def _can_access_IP(self, IP):
+        with self.master_lock:
+            if IP in self.last_access_times:
+                cur_time = time()
+                last_time = self.last_access_times[IP]
 
-        if server_IP in self.last_access_times:
-            cur_time = time()
-            last_time = self.last_access_times[server_IP]
+                period = self.default_access_period
+                if IP in self.access_period:
+                    period = self.access_period[IP]
 
-            period = self.default_access_period
-            if server_IP in self.access_period:
-                period = self.access_period[server_IP]
-
-            return (cur_time - last_time > period)
+                return (cur_time - last_time > period)
             
         return True
     
-    def _access_URL(self, URL):
-        try:
-            server_IP = socket.gethostbyname(urlparse(URL).hostname)
-        except Exception as e:
-            print(e)
-            return
-        
+    def _access_IP(self, IP):
         with self.master_lock:
-            self.last_access_times[server_IP] = time()
+            self.last_access_times[IP] = time()
+
+    def _get_ip_from_URL(self, URL):
+        parsed = urlparse(URL)
+        try:
+            server_IP = socket.gethostbyname(parsed.hostname)
+        except Exception as e:
+            print(f'_get_ip_from_URL threw : {e}')
+            server_IP = parsed.hostname
+        return server_IP
