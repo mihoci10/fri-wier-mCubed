@@ -2,9 +2,7 @@ from time import time, sleep
 import concurrent.futures
 import threading
 from extractor import Extractor
-
-import socket
-from urllib.parse import urlparse
+from utils import get_ip_from_URL
 
 class Crawler:
 
@@ -31,7 +29,7 @@ class Crawler:
             with self.master_lock:
                 i = 0
                 while (i < len(self.frontier)):
-                    IP = self._get_ip_from_URL(self.frontier[i])
+                    IP = get_ip_from_URL(self.frontier[i])
                     if self._can_access_IP(IP):
                         break
                     i += 1
@@ -43,10 +41,14 @@ class Crawler:
 
             print(f'Selected URL: {cur_link}')
 
-            IP = self._get_ip_from_URL(cur_link)
+            IP = get_ip_from_URL(cur_link)
             self._access_IP(IP)
 
             extractor.run(cur_link)
+
+            if extractor.time_delay != None:
+                with self.master_lock:
+                    self.access_period[IP] = extractor.time_delay
 
     def _can_access_IP(self, IP):
         with self.master_lock:
@@ -66,11 +68,4 @@ class Crawler:
         with self.master_lock:
             self.last_access_times[IP] = time()
 
-    def _get_ip_from_URL(self, URL):
-        parsed = urlparse(URL)
-        try:
-            server_IP = socket.gethostbyname(parsed.hostname)
-        except Exception as e:
-            print(f'_get_ip_from_URL threw : {e}')
-            server_IP = parsed.hostname
-        return server_IP
+    

@@ -1,9 +1,10 @@
 import os
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from time import sleep
 from bs4 import BeautifulSoup
+from urllib.robotparser import RobotFileParser
+from utils import get_hostname_from_URL, get_scheme_from_URL
 
 class Extractor:
 
@@ -15,13 +16,37 @@ class Extractor:
         self.firefox_options.add_argument("user-agent=fri-ieps-mCubed")
 
         self.content = None
+        self.permission = False
+        self.time_delay = None
 
     def run(self, URL: str) -> None:
+        self._check_compliance(URL)
 
+        self.content = None
+
+        if not self.permission:
+            return
+        
         with webdriver.Firefox(options=self.firefox_options) as driver: 
             driver.get(URL)
             sleep(self.load_time)
             self.content = driver.page_source
+
+    def _check_compliance(self, URL: str):
+        SCHEME = get_scheme_from_URL(URL)
+        HOST_NAME = get_hostname_from_URL(URL)
+        
+        self.permission = True
+        self.time_delay = None
+
+        robot_parser = RobotFileParser(f'{SCHEME}://{HOST_NAME}/robots.txt')
+        try:
+            robot_parser.read()
+            self.permission = robot_parser.can_fetch('fri-ieps-mCubed', URL)
+            self.time_delay = robot_parser.crawl_delay('fri-ieps-mCubed')
+
+        except Exception as e:
+            print(f'extractor.run threw {e}')
             
     def extract_links_from_html(self, html_content):
         soup = BeautifulSoup(html_content, 'html.parser')
