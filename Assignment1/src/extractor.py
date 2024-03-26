@@ -51,12 +51,15 @@ class Extractor:
     def extract_links_from_html(self, html_content):
         soup = BeautifulSoup(html_content, 'html.parser')
         links = soup.find_all('a', href=True)
+        binary_file_extensions = ['.pdf', '.doc', '.docx', '.ppt', '.pptx']
         extracted_urls = []
         for link in links:
             url = link['href']
-            # You can add more filtering conditions as per your requirement
             if url.startswith('http') or url.startswith('https'):
                 extracted_urls.append(url)
+            if any(url.endswith(ext) for ext in binary_file_extensions):
+                continue
+                #TODO: set page_type to BINARY
         return extracted_urls
 
     def extract_links_from_file(self, input_file):
