@@ -2,6 +2,7 @@ from time import time, sleep
 import concurrent.futures
 import threading
 from extractor import Extractor
+from database import Database, DB_Page_Types, DB_Data_Types
 from utils import get_ip_from_URL
 
 class Crawler:
@@ -14,13 +15,16 @@ class Crawler:
         self.default_access_period: float = default_access_period
         self.master_lock = threading.RLock()
         self.terminate: bool = False
+        self.db = Database(db_name = "mCubed", user = "mCubed", password = "crawling", host = "127.0.0.1", port = 5432)
 
     def run(self) -> None:
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.worker_count) as executor:
             for _ in range(self.worker_count):
                 executor.submit(self._thread_worker)
+        self.db.connection.close()
 
     def _thread_worker(self):
+        cursor = self.db.connection.cursor()
         extractor = Extractor()
         while True:
             if self.terminate:
@@ -49,6 +53,7 @@ class Crawler:
             if extractor.time_delay != None:
                 with self.master_lock:
                     self.access_period[IP] = extractor.time_delay
+        cursor.close()
 
     def _can_access_IP(self, IP):
         with self.master_lock:
