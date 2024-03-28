@@ -253,11 +253,22 @@ class Database:
 
 
     # SELECT functions
-    def get_site(self, cursor, site_id: int):
+    def get_site(self, cursor, id: int):
         sql = """SELECT * FROM crawldb.site WHERE id = %s"""
 
         try:
-            cursor.execute(sql, (site_id,))
+            cursor.execute(sql, (id,))
+            site = cursor.fetchone()
+            return site
+        except Exception as e:
+            print(f"Error selecting 'site': {e}")
+            return False
+        
+    def get_site_name(self, cursor, domain: int):
+        sql = """SELECT * FROM crawldb.site WHERE domain = %s"""
+
+        try:
+            cursor.execute(sql, (domain,))
             site = cursor.fetchone()
             return site
         except Exception as e:
@@ -269,6 +280,28 @@ class Database:
 
         try:
             cursor.execute(sql, (page_id,))
+            page = cursor.fetchone()
+            return page
+        except Exception as e:
+            print(f"Error selecting 'page': {e}")
+            return False
+        
+    def get_page_by_hash(self, cursor, html_content_hash: str):
+        sql = """SELECT * FROM crawldb.page WHERE html_content_hash = %s"""
+
+        try:
+            cursor.execute(sql, (html_content_hash,))
+            page = cursor.fetchone()
+            return page
+        except Exception as e:
+            print(f"Error selecting 'page': {e}")
+            return False
+        
+    def get_page_by_url(self, cursor, url: str):
+        sql = """SELECT * FROM crawldb.page WHERE url = %s"""
+
+        try:
+            cursor.execute(sql, (url,))
             page = cursor.fetchone()
             return page
         except Exception as e:

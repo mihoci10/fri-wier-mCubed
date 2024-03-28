@@ -5,6 +5,8 @@ from time import sleep
 from bs4 import BeautifulSoup
 from urllib.robotparser import RobotFileParser
 from utils import get_hostname_from_URL, get_scheme_from_URL
+import urllib.request
+from datetime import datetime
 
 class Extractor:
 
@@ -15,14 +17,25 @@ class Extractor:
         # firefox_options.add_argument("--headless")
         self.firefox_options.add_argument("user-agent=fri-ieps-mCubed")
 
+        self.url = None
         self.content = None
+        self.content_hash = None
+        self.http_status = None
+        self.accessed_time = None
         self.permission = False
         self.time_delay = None
+        self.domain = None
+        self.robots_content = None
+        self.sitemap_content = None
 
     def run(self, URL: str) -> None:
         self._check_compliance(URL)
 
+        self.url = URL
         self.content = None
+        self.content_hash = None
+        self.http_status = None
+        self.accessed_time = datetime.now()
 
         if not self.permission:
             return
@@ -31,22 +44,49 @@ class Extractor:
             driver.get(URL)
             sleep(self.load_time)
             self.content = driver.page_source
+            self.content_hash = str(hash(self.content))
+            self.http_status = self._get_response_code_simple(URL)
+
+    def _get_content_simple(self, URL):
+        result = None
+        try:
+            content = urllib.request.urlopen(URL)
+            result = content.read().decode('utf-8')
+        except Exception as e:
+            pass
+        return result
+    
+    def _get_response_code_simple(self, URL):
+        result = None
+        try:
+            content = urllib.request.urlopen(URL)
+            result = content.getcode()
+        except Exception as e:
+            pass
+        return result
+
 
     def _check_compliance(self, URL: str):
         SCHEME = get_scheme_from_URL(URL)
         HOST_NAME = get_hostname_from_URL(URL)
-        
+        robots_url = f'{SCHEME}://{HOST_NAME}/robots.txt'
+
         self.permission = True
         self.time_delay = None
+        self.domain = HOST_NAME
+        self.robots_content = None
+        self.sitemap_content = None
 
-        robot_parser = RobotFileParser(f'{SCHEME}://{HOST_NAME}/robots.txt')
+        robot_parser = RobotFileParser(robots_url)
         try:
             robot_parser.read()
             self.permission = robot_parser.can_fetch('fri-ieps-mCubed', URL)
             self.time_delay = robot_parser.crawl_delay('fri-ieps-mCubed')
-
+            self.robots_content = self._get_content_simple(robots_url)
+            if robot_parser.site_maps() != None and len(robot_parser.site_maps()) > 0:
+                self.sitemap_content = self._get_content_simple(robot_parser.site_maps()[0])
         except Exception as e:
-            print(f'extractor.run threw {e}')
+            print(f'extractor._check_compliance threw {e}')
             
     def extract_links_from_html(self, html_content):
         soup = BeautifulSoup(html_content, 'html.parser')
