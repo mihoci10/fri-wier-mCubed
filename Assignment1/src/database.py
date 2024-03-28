@@ -1,6 +1,7 @@
 from datetime import datetime
 import psycopg2
 from psycopg2 import OperationalError
+from psycopg2.extensions import AsIs
 from enum import Enum
 
 class DB_Page_Types(str, Enum):
@@ -29,6 +30,7 @@ class Database:
         self.error = None
         self.page_type_codes = [DB_Page_Types.HTML, DB_Page_Types.BINARY, DB_Page_Types.DUPLICATE, DB_Page_Types.FRONTIER]
         self.data_type_codes = [DB_Data_Types.PDF, DB_Data_Types.DOC, DB_Data_Types.DOCX, DB_Data_Types.PPT, DB_Data_Types.PPTX]
+        self.table_names = ["site", "page", "image", "link", "page_data"]
 
         self._create_connection()
 
@@ -251,6 +253,28 @@ class Database:
             print(f"Error inserting 'page_data': {e}")
             return False
 
+    # UPDATE functions
+    # general update function (structure: UPDATE table_name SET update_column = new_value WHERE search_column = search_value)
+    def update(self, cursor, table_name: str, update_column: str, new_value, search_column: str, search_value) -> int:
+        """
+        General update function \n
+        Structure: UPDATE crawldb.table_name SET update_column = new_value WHERE search_column = search_value \n
+        Returns a number of updated rows or -1 if error occurs
+        """
+
+        sql = """UPDATE crawldb.%s SET %s = %s WHERE %s = %s"""
+
+        if(not table_name in self.table_names):
+            print(f"Error updating database, table with name {table_name} does not exist.")
+            return -1
+
+        try:
+            cursor.execute(sql, (AsIs(table_name), AsIs(update_column), new_value, AsIs(search_column), search_value))
+            count = cursor.rowcount
+            return count
+        except Exception as e:
+            print(f"Error selecting 'site': {e}")
+            return -1
 
     # SELECT functions
     def get_site(self, cursor, site_id: int):
