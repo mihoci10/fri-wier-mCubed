@@ -4,8 +4,9 @@ from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from time import sleep
 from bs4 import BeautifulSoup
 from urllib.robotparser import RobotFileParser
-from utils import get_hostname_from_URL, get_scheme_from_URL
+from utils import get_hostname_from_URL, get_scheme_from_URL, get_canonical_URL
 import urllib.request
+from urllib import error, parse
 from datetime import datetime
 import ssl
 
@@ -21,6 +22,7 @@ class Extractor:
 
         self.url = None
         self.content = None
+        self.content_type = None
         self.content_hash = None
         self.http_status = None
         self.accessed_time = None
@@ -29,7 +31,9 @@ class Extractor:
         self.domain = None
         self.robots_content = None
         self.sitemap_content = None
-        self.extracted_urls = []
+        self.extracted_urls: list[str] = []
+        self.extracted_files: list[str] = []
+        self.extracted_images: list[str] = []
 
     def _init_driver(self):
         firefox_options: FirefoxOptions = FirefoxOptions()
@@ -44,23 +48,28 @@ class Extractor:
 
         self.url = URL
         self.content = None
+        self.content_type = None
         self.content_hash = None
         self.http_status = None
         self.accessed_time = datetime.now()
+        self.extracted_urls = []
+        self.extracted_files = []
+        self.extracted_images = []
 
         if not self.permission:
             return
     
+        self._get_response_info(URL)
+
         try:
             self.driver.get(URL)
             sleep(self.load_time)
             self.content = self.driver.page_source
             self.content_hash = str(hash(self.content))
-            self.http_status = self._get_response_code_simple(URL)
-            self._extract_links_from_html(self.content)
+            self._extract_content(self.content)
         except Exception as e:
-            print(f'extractor.run threw {e}')
-            self.permission = False
+            self.content = ''
+            self.content_hash = ''
             self._init_driver()
 
     def _get_content_simple(self, URL):
@@ -72,14 +81,19 @@ class Extractor:
             pass
         return result
     
-    def _get_response_code_simple(self, URL):
-        result = None
+    def _get_response_info(self, URL):
+        self.http_status = None
+        self.content_type = None
         try:
             content = urllib.request.urlopen(URL, context=self.ssl_ctx)
-            result = content.getcode()
+            self.content_type = content.info().get_content_type()
+            self.http_status = content.getcode()
+        except error.HTTPError as e:
+            self.http_status = e.code
+        except error.URLError as e:
+            self.http_status = 408
         except Exception as e:
-            pass
-        return result
+            self.http_status = 495
 
 
     def _check_compliance(self, URL: str):
@@ -103,16 +117,40 @@ class Extractor:
                 self.sitemap_content = self._get_content_simple(robot_parser.site_maps()[0])
         except Exception as e:
             print(f'extractor._check_compliance threw {e}')
-            
+
+    def _extract_content(self, content):
+        self._extract_links_from_html(content)
+        self._extract_files_from_html(content)
+        self._extract_images_from_html(content)
+
     def _extract_links_from_html(self, html_content):
         soup = BeautifulSoup(html_content, 'html.parser')
         links = soup.find_all('a', href=True)
-        binary_file_extensions = ['.pdf', '.doc', '.docx', '.ppt', '.pptx']
         self.extracted_urls = []
         for link in links:
             url = link['href']
+            url = parse.urljoin(self.url, url)
+            url = get_canonical_URL(url)
             if url.startswith('http') or url.startswith('https'):
                 self.extracted_urls.append(url)
+            
+    def _extract_files_from_html(self, html_content):
+        soup = BeautifulSoup(html_content, 'html.parser')
+        links = soup.find_all('a', href=True)
+        binary_file_extensions = ['.pdf', '.doc', '.docx', '.ppt', '.pptx']
+        self.extracted_files = []
+        for link in links:
+            url = link['href']
+            url = parse.urljoin(self.url, url)
             if any(url.endswith(ext) for ext in binary_file_extensions):
-                continue
-                #TODO: set page_type to BINARY
+                self.extracted_files.append(url)
+            
+    def _extract_images_from_html(self, html_content):
+        soup = BeautifulSoup(html_content, 'html.parser')
+        links = soup.find_all('img')
+        self.extracted_images = []
+        for link in links:
+            url = link['src']
+            url = parse.urljoin(self.url, url)
+            if url.startswith('http') or url.startswith('https'):
+                self.extracted_images.append(url)
