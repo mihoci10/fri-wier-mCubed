@@ -14,7 +14,7 @@ class Extractor:
         self.load_time: float = load_time
 
         self.firefox_options: FirefoxOptions = FirefoxOptions()
-        # firefox_options.add_argument("--headless")
+        self.firefox_options.add_argument("--headless")
         self.firefox_options.add_argument("user-agent=fri-ieps-mCubed")
 
         self.url = None
@@ -27,6 +27,7 @@ class Extractor:
         self.domain = None
         self.robots_content = None
         self.sitemap_content = None
+        self.extracted_urls = []
 
     def run(self, URL: str) -> None:
         self._check_compliance(URL)
@@ -46,6 +47,7 @@ class Extractor:
             self.content = driver.page_source
             self.content_hash = str(hash(self.content))
             self.http_status = self._get_response_code_simple(URL)
+            self._extract_links_from_html(self.content)
 
     def _get_content_simple(self, URL):
         result = None
@@ -88,49 +90,15 @@ class Extractor:
         except Exception as e:
             print(f'extractor._check_compliance threw {e}')
             
-    def extract_links_from_html(self, html_content):
+    def _extract_links_from_html(self, html_content):
         soup = BeautifulSoup(html_content, 'html.parser')
         links = soup.find_all('a', href=True)
         binary_file_extensions = ['.pdf', '.doc', '.docx', '.ppt', '.pptx']
-        extracted_urls = []
+        self.extracted_urls = []
         for link in links:
             url = link['href']
             if url.startswith('http') or url.startswith('https'):
-                extracted_urls.append(url)
+                self.extracted_urls.append(url)
             if any(url.endswith(ext) for ext in binary_file_extensions):
                 continue
                 #TODO: set page_type to BINARY
-        return extracted_urls
-
-    def extract_links_from_file(self, input_file):
-        print("Extracting URLs from file")
-        new_urls = []
-
-        try:
-            with open(input_file, 'r', encoding='utf-8') as file:
-                html_content = file.read()
-
-            existing_urls = set()
-            if os.path.exists('Assignment1/urls.txt'):
-                with open('Assignment1/urls.txt', 'r', encoding='utf-8') as url_file:
-                    existing_urls = set(line.strip() for line in url_file)
-
-            extracted_urls = self.extract_links_from_html(html_content)
-
-            for url in extracted_urls:
-                if url not in existing_urls:
-                    new_urls.append(url)
-                    existing_urls.add(url)
-
-            if new_urls:
-                with open('Assignment1/urls.txt', 'a', encoding='utf-8') as file:
-                    for url in new_urls:
-                        file.write(url + '\n')
-                print(f"{len(new_urls)} new URLs added to urls.txt")
-            else:
-                print("No new URLs found.")
-
-        except FileNotFoundError:
-            print(f"File '{input_file}' not found.")
-
-

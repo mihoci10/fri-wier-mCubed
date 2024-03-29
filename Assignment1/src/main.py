@@ -1,4 +1,12 @@
 from crawler import Crawler
 
-c = Crawler(1)
+c = Crawler([
+    'https://www.gov.si/', 
+    'https://evem.gov.si/', 
+    'https://e-uprava.gov.si/', 
+    'https://www.e-prostor.gov.si/'
+    ], 
+    worker_count=1
+)
+
 c.run()

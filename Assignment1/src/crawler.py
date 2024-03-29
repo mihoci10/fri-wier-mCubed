@@ -7,8 +7,8 @@ from utils import get_ip_from_URL
 
 class Crawler:
 
-    def __init__(self, worker_count: int = 1, default_access_period: float = 5.0) -> None:
-        self.frontier: list[str] = [('https://www.google.si', None), ('https://www.youtube.com', None), ('https://ucilnica.fri.uni-lj.si/', 'https://www.youtube.com')]
+    def __init__(self, frontier: list[str], worker_count: int = 1, default_access_period: float = 5.0) -> None:
+        self.frontier: list[tuple[str, str]] = [(f, None) for f in frontier]
         self.worker_count: int = worker_count
         self.access_period: dict[str, float] = {}
         self.last_access_times: dict[str, float] = {}
@@ -46,16 +46,23 @@ class Crawler:
 
             print(f'Selected URL: {cur_link[0]}')
 
-            IP = get_ip_from_URL(cur_link[0])
-            self._access_IP(IP)
+            if self._check_page_exists(cursor, cur_link[0]):
+                self._insert_link(cursor, cur_link[0], cur_link[1])
+            else:
+                IP = get_ip_from_URL(cur_link[0])
+                self._access_IP(IP)
 
-            extractor.run(cur_link[0])
-            if extractor.permission:
-                self._insert_extractor_results(extractor, cursor, cur_link[1])
+                extractor.run(cur_link[0])
+                if extractor.permission:
+                    self._insert_extractor_results(extractor, cursor, cur_link[1])
 
-            if extractor.time_delay != None:
-                with self.master_lock:
-                    self.access_period[IP] = extractor.time_delay
+                    for link in extractor.extracted_urls:
+                        with self.master_lock:
+                            self.frontier.append((link, cur_link[0]))
+
+                if extractor.time_delay != None:
+                    with self.master_lock:
+                        self.access_period[IP] = extractor.time_delay
         cursor.close()
 
     def _can_access_IP(self, IP):
@@ -76,6 +83,20 @@ class Crawler:
         with self.master_lock:
             self.last_access_times[IP] = time()
 
+    def _check_page_exists(self, cursor, URL:str):
+        with self.master_lock:
+            page_id = self.db.get_page_by_url(cursor, URL)
+            return page_id != None
+
+    def _insert_link(self, cursor, cur_url:str, prev_url:str):
+        with self.master_lock:
+            page_id = self.db.get_page_by_url(cursor, cur_url)
+            prev_page_id = self.db.get_page_by_url(cursor, prev_url)
+
+            if page_id != None and prev_page_id != None:
+                    self.db.insert_link(cursor, prev_page_id[0], page_id[0])
+
+
     def _insert_extractor_results(self, extractor: Extractor, cursor, src_site: str):
         with self.master_lock:
             site_id = self.db.get_site_name(cursor, extractor.domain)
@@ -91,32 +112,33 @@ class Crawler:
                 site_id = site_id[0]
 
             page_id = self.db.get_page_by_url(cursor, extractor.url)
-            if page_id != None:
-                return
-            page_id = self.db.get_page_by_hash(cursor, extractor.content_hash)
             orig_page_id = None
             if page_id == None:
-                page_id = self.db.insert_page(
-                    cursor, 
-                    site_id, 
-                    DB_Page_Types.HTML, 
-                    extractor.url, 
-                    extractor.content, 
-                    extractor.http_status, 
-                    extractor.accessed_time, 
-                    extractor.content_hash)
+                page_id = self.db.get_page_by_hash(cursor, extractor.content_hash)
+                if page_id == None:
+                    page_id = self.db.insert_page(
+                        cursor, 
+                        site_id, 
+                        DB_Page_Types.HTML, 
+                        extractor.url, 
+                        extractor.content, 
+                        extractor.http_status, 
+                        extractor.accessed_time, 
+                        extractor.content_hash)
+                else:
+                    orig_page_id = page_id[0]
+                    page_id = self.db.insert_page(
+                        cursor, 
+                        site_id, 
+                        DB_Page_Types.DUPLICATE, 
+                        extractor.url, 
+                        '', 
+                        extractor.http_status, 
+                        extractor.accessed_time, 
+                        extractor.content_hash)
             else:
-                orig_page_id = page_id[0]
-                page_id = self.db.insert_page(
-                    cursor, 
-                    site_id, 
-                    DB_Page_Types.DUPLICATE, 
-                    extractor.url, 
-                    '', 
-                    extractor.http_status, 
-                    extractor.accessed_time, 
-                    extractor.content_hash)
-                    
+                page_id = page_id[0]
+
             if src_site != None:
                 src_site_id = self.db.get_page_by_url(cursor, src_site)
                 if src_site_id != None:
@@ -124,5 +146,6 @@ class Crawler:
                     self.db.insert_link(cursor, src_site_id, page_id)
                 if orig_page_id != None:
                     self.db.insert_link(cursor, orig_page_id, page_id)
+
 
     
