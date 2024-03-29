@@ -61,16 +61,19 @@ class Extractor:
     
         self._get_response_info(URL)
 
-        try:
-            self.driver.get(URL)
-            sleep(self.load_time)
-            self.content = self.driver.page_source
-            self.content_hash = str(hash(self.content))
-            self._extract_content(self.content)
-        except Exception as e:
+        if (self.http_status // 100 != 2) or (self.content_type != None and self.content_type != 'text/html'):
             self.content = ''
             self.content_hash = ''
-            self._init_driver()
+        else:
+            try:
+                self.driver.get(URL)
+                sleep(self.load_time)
+                self.content = self.driver.page_source
+                self.content_hash = str(hash(self.content))
+                self._extract_content(self.content)
+            except Exception as e:
+                self.content = ''
+                self.content_hash = ''
 
     def _get_content_simple(self, URL):
         result = None
@@ -119,31 +122,22 @@ class Extractor:
             print(f'extractor._check_compliance threw {e}')
 
     def _extract_content(self, content):
-        self._extract_links_from_html(content)
-        self._extract_files_from_html(content)
+        self._extract_links_files_from_html(content)
         self._extract_images_from_html(content)
 
-    def _extract_links_from_html(self, html_content):
+    def _extract_links_files_from_html(self, html_content):
         soup = BeautifulSoup(html_content, 'html.parser')
         links = soup.find_all('a', href=True)
+        binary_file_extensions = ['.pdf', '.doc', '.docx', '.ppt', '.pptx']
         self.extracted_urls = []
         for link in links:
             url = link['href']
             url = parse.urljoin(self.url, url)
             url = get_canonical_URL(url)
-            if url.startswith('http') or url.startswith('https'):
-                self.extracted_urls.append(url)
-            
-    def _extract_files_from_html(self, html_content):
-        soup = BeautifulSoup(html_content, 'html.parser')
-        links = soup.find_all('a', href=True)
-        binary_file_extensions = ['.pdf', '.doc', '.docx', '.ppt', '.pptx']
-        self.extracted_files = []
-        for link in links:
-            url = link['href']
-            url = parse.urljoin(self.url, url)
             if any(url.endswith(ext) for ext in binary_file_extensions):
                 self.extracted_files.append(url)
+            elif url.startswith('http') or url.startswith('https'):
+                self.extracted_urls.append(url)
             
     def _extract_images_from_html(self, html_content):
         soup = BeautifulSoup(html_content, 'html.parser')

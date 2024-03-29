@@ -77,7 +77,6 @@ class Crawler:
             print(f'worker threw {e}')
 
     def _can_access_IP(self, IP):
-        
         with self.master_lock:
             if IP in self.last_access_times:
                 cur_time = time()
