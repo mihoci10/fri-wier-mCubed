@@ -15,6 +15,10 @@ class Extractor:
         self.load_time: float = load_time
         self._init_driver()
 
+        self.ssl_ctx = ssl.create_default_context()
+        self.ssl_ctx.check_hostname = False
+        self.ssl_ctx.verify_mode = ssl.CERT_NONE
+
         self.url = None
         self.content = None
         self.content_hash = None
@@ -32,10 +36,6 @@ class Extractor:
         firefox_options.add_argument("--headless")
         firefox_options.add_argument("user-agent=fri-ieps-mCubed")
         firefox_options.accept_insecure_certs=True
-
-        ssl_ctx = ssl.create_default_context()
-        ssl_ctx.check_hostname = False
-        ssl_ctx.verify_mode = ssl.CERT_NONE
         
         self.driver = webdriver.Firefox(options=firefox_options)
 
