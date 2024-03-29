@@ -17,3 +17,7 @@ def get_ip_from_URL(URL: str):
             print(f'get_ip_from_URL threw : {e}')
             server_IP = HOST_NAME
         return server_IP
+
+def get_canonical_URL(URL:str):
+     parsed = urlparse(URL)
+     return f'{parsed.scheme}://{parsed.hostname}{parsed.path}'

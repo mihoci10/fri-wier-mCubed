@@ -3,7 +3,7 @@ import concurrent.futures
 import threading
 from extractor import Extractor
 from database import Database, DB_Page_Types, DB_Data_Types
-from utils import get_ip_from_URL
+from utils import get_ip_from_URL, get_canonical_URL, get_hostname_from_URL
 
 class Crawler:
 
@@ -45,20 +45,23 @@ class Crawler:
                 continue
 
             print(f'Selected URL: {cur_link[0]}')
+            URL = get_canonical_URL(cur_link[0])
+            prev_URL = get_canonical_URL(cur_link[1])
 
-            if self._check_page_exists(cursor, cur_link[0]):
-                self._insert_link(cursor, cur_link[0], cur_link[1])
+            if self._check_page_exists(cursor, URL):
+                self._insert_link(cursor, URL, prev_URL)
             else:
-                IP = get_ip_from_URL(cur_link[0])
+                IP = get_ip_from_URL(URL)
                 self._access_IP(IP)
 
-                extractor.run(cur_link[0])
+                extractor.run(URL)
                 if extractor.permission:
-                    self._insert_extractor_results(extractor, cursor, cur_link[1])
+                    self._insert_extractor_results(extractor, cursor, prev_URL)
 
                     for link in extractor.extracted_urls:
-                        with self.master_lock:
-                            self.frontier.append((link, cur_link[0]))
+                        if get_hostname_from_URL(link).endswith('gov.si'):
+                            with self.master_lock:
+                                self.frontier.append((link, URL))
 
                 if extractor.time_delay != None:
                     with self.master_lock:
@@ -95,7 +98,6 @@ class Crawler:
 
             if page_id != None and prev_page_id != None:
                     self.db.insert_link(cursor, prev_page_id[0], page_id[0])
-
 
     def _insert_extractor_results(self, extractor: Extractor, cursor, src_site: str):
         with self.master_lock:

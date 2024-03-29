@@ -7,15 +7,13 @@ from urllib.robotparser import RobotFileParser
 from utils import get_hostname_from_URL, get_scheme_from_URL
 import urllib.request
 from datetime import datetime
+import ssl
 
 class Extractor:
 
     def __init__(self, load_time: float = 5) -> None:
         self.load_time: float = load_time
-
-        self.firefox_options: FirefoxOptions = FirefoxOptions()
-        self.firefox_options.add_argument("--headless")
-        self.firefox_options.add_argument("user-agent=fri-ieps-mCubed")
+        self._init_driver()
 
         self.url = None
         self.content = None
@@ -29,6 +27,18 @@ class Extractor:
         self.sitemap_content = None
         self.extracted_urls = []
 
+    def _init_driver(self):
+        firefox_options: FirefoxOptions = FirefoxOptions()
+        firefox_options.add_argument("--headless")
+        firefox_options.add_argument("user-agent=fri-ieps-mCubed")
+        firefox_options.accept_insecure_certs=True
+
+        ssl_ctx = ssl.create_default_context()
+        ssl_ctx.check_hostname = False
+        ssl_ctx.verify_mode = ssl.CERT_NONE
+        
+        self.driver = webdriver.Firefox(options=firefox_options)
+
     def run(self, URL: str) -> None:
         self._check_compliance(URL)
 
@@ -40,19 +50,23 @@ class Extractor:
 
         if not self.permission:
             return
-        
-        with webdriver.Firefox(options=self.firefox_options) as driver: 
-            driver.get(URL)
+    
+        try:
+            self.driver.get(URL)
             sleep(self.load_time)
-            self.content = driver.page_source
+            self.content = self.driver.page_source
             self.content_hash = str(hash(self.content))
             self.http_status = self._get_response_code_simple(URL)
             self._extract_links_from_html(self.content)
+        except Exception as e:
+            print(f'extractor.run threw {e}')
+            self.permission = False
+            self._init_driver()
 
     def _get_content_simple(self, URL):
         result = None
         try:
-            content = urllib.request.urlopen(URL)
+            content = urllib.request.urlopen(URL, context=self.ssl_ctx)
             result = content.read().decode('utf-8')
         except Exception as e:
             pass
@@ -61,7 +75,7 @@ class Extractor:
     def _get_response_code_simple(self, URL):
         result = None
         try:
-            content = urllib.request.urlopen(URL)
+            content = urllib.request.urlopen(URL, context=self.ssl_ctx)
             result = content.getcode()
         except Exception as e:
             pass
