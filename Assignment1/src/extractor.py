@@ -78,7 +78,7 @@ class Extractor:
     def _get_content_simple(self, URL):
         result = None
         try:
-            content = urllib.request.urlopen(URL, context=self.ssl_ctx)
+            content = urllib.request.urlopen(URL, context=self.ssl_ctx, timeout=2)
             result = content.read().decode('utf-8')
         except Exception as e:
             pass
@@ -88,7 +88,7 @@ class Extractor:
         self.http_status = None
         self.content_type = None
         try:
-            content = urllib.request.urlopen(URL, context=self.ssl_ctx)
+            content = urllib.request.urlopen(URL, context=self.ssl_ctx, timeout=2)
             self.content_type = content.info().get_content_type()
             self.http_status = content.getcode()
         except error.HTTPError as e:

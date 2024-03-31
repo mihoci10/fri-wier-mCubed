@@ -91,7 +91,7 @@ class Database:
             return False
         
     def insert_page(self, cursor, site_id: int, page_type_code: str, url: str, html_content: str, http_status_code: int, accessed_time: datetime, html_content_hash: str) -> int:
-        sql = """INSERT INTO crawldb.page (site_id, page_type_code, url, html_content, http_status_code, accessed_time, html_content_hash) VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id"""
+        sql = """UPDATE crawldb.page SET site_id=%s, page_type_code=%s, html_content=%s, http_status_code=%s, accessed_time=%s, html_content_hash=%s WHERE url=%s RETURNING id"""
 
         site = self.get_site(cursor, site_id)
         if(site is None):
@@ -106,7 +106,7 @@ class Database:
             print(f"Error inserting 'page', attribute 'url' too long ({url}).")
             return -1
         
-        record = (site_id, page_type_code, url, html_content, http_status_code, accessed_time, html_content_hash)
+        record = (site_id, page_type_code, html_content, http_status_code, accessed_time, html_content_hash, url)
 
         try:
             cursor.execute(sql, record)
@@ -115,6 +115,56 @@ class Database:
         except Exception as e:
             print(f"Error inserting 'page': {e}")
             return -1
+        
+    def insert_page_frontier(self, cursor, url: str) -> int:
+        sql = """INSERT INTO crawldb.page (page_type_code, url) VALUES (%s, %s) RETURNING id"""
+        
+        if(len(url) > 3000):
+            print(f"Error inserting 'page', attribute 'url' too long ({url}).")
+            return -1
+        
+        record = (DB_Page_Types.FRONTIER, url)
+
+        try:
+            cursor.execute(sql, record)
+            id = cursor.fetchone()[0]
+            return id
+        except Exception as e:
+            print(f"Error inserting 'page': {e}")
+            return -1
+        
+    def get_pages_frontier(self, cursor):
+        sql = """SELECT * FROM crawldb.page WHERE page_type_code = %s ORDER BY id LIMIT 1000"""
+
+        try:
+            cursor.execute(sql, (DB_Page_Types.FRONTIER,))
+            pages = cursor.fetchall()
+            return pages
+        except Exception as e:
+            print(f"Error selecting 'page': {e}")
+            return []
+        
+    def has_any_pages(self, cursor):
+        sql = """SELECT COUNT(*) FROM crawldb.page"""
+
+        try:
+            cursor.execute(sql, (DB_Page_Types.FRONTIER,))
+            cnt = cursor.fetchone()[0]
+            return cnt > 0
+        except Exception as e:
+            print(f"Error selecting 'page': {e}")
+            return False
+        
+    def set_page_frontier_busy(self, cursor, page_id):
+        sql = """UPDATE crawldb.page SET page_type_code=NULL WHERE id = %s RETURNING id"""
+
+        try:
+            cursor.execute(sql, (page_id,))
+            page = cursor.fetchone()[0]
+            return page
+        except Exception as e:
+            print(f"Error selecting 'page': {e}")
+            return False
         
     def insert_image(self, cursor, page_id: int, filename: str, content_type: str, data: bytes, accessed_time: datetime) -> int:
         sql = """INSERT INTO crawldb.image (page_id, filename, content_type, data, accessed_time) VALUES (%s, %s, %s, %s, %s) RETURNING id"""
@@ -186,6 +236,17 @@ class Database:
         try:
             cursor.execute(sql, record)
             return True
+        except Exception as e:
+            print(f"Error inserting 'link': {e}")
+            return False
+        
+    def has_link(self, cursor, from_page: int, to_page: int) -> bool:
+        sql = """SELECT * FROM crawldb.link WHERE from_page=%s AND to_page=%s"""
+        
+        record = (from_page, to_page)
+        try:
+            cursor.execute(sql, record)
+            return cursor.fetchone() != None
         except Exception as e:
             print(f"Error inserting 'link': {e}")
             return False
@@ -331,7 +392,6 @@ class Database:
         except Exception as e:
             print(f"Error selecting 'page': {e}")
             return False
-
 
     # OTHER
     def check_page_ids(self, cursor, page_ids):
