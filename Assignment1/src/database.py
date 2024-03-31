@@ -43,6 +43,13 @@ class Database:
             print(f"Error connecting to the database: {e}")
             self.error = e
 
+    def reset_frontier(self, cursor):
+        sql = """UPDATE crawldb.page SET page_type_code = 'FRONTIER' WHERE page_type_code IS NULL"""
+        try:
+            cursor.execute(sql)
+        except Exception as e:
+            print(f"Error reseting frontier: {e}")
+
     # INSERT functions
     # most single row insert functions return the id of the inserted row, or -1 if error occurs
     # multiple row insert function return True if insert was successfull or False if error occurs

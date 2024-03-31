@@ -23,6 +23,8 @@ class Crawler:
         if not self.db.has_any_pages(cursor):
             for page in self.frontier:
                 self.db.insert_page_frontier(cursor, page)
+        else:
+            self.db.reset_frontier(cursor)
         cursor.close()
 
         try:

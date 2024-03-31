@@ -6,7 +6,7 @@ c = Crawler([
     'https://e-uprava.gov.si/', 
     'https://www.e-prostor.gov.si/'
     ], 
-    worker_count=10
+    worker_count=16
 )
 
 c.run()

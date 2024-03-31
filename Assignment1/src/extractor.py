@@ -10,6 +10,23 @@ from urllib import error, parse
 from datetime import datetime
 import ssl
 
+class TimeoutRobotFileParser(RobotFileParser):
+    def __init__(self, url='', timeout=5):
+        super().__init__(url)
+        self.timeout = timeout
+
+    def read(self):
+        try:
+            f = urllib.request.urlopen(self.url, timeout=self.timeout)
+        except urllib.error.HTTPError as err:
+            if err.code in (401, 403):
+                self.disallow_all = True
+            elif err.code >= 400:
+                self.allow_all = True
+        else:
+            raw = f.read()
+            self.parse(raw.decode("utf-8").splitlines())
+
 class Extractor:
 
     def __init__(self, load_time: float = 5) -> None:
@@ -78,7 +95,7 @@ class Extractor:
     def _get_content_simple(self, URL):
         result = None
         try:
-            content = urllib.request.urlopen(URL, context=self.ssl_ctx, timeout=2)
+            content = urllib.request.urlopen(URL, context=self.ssl_ctx, timeout=5)
             result = content.read().decode('utf-8')
         except Exception as e:
             pass
@@ -88,7 +105,7 @@ class Extractor:
         self.http_status = None
         self.content_type = None
         try:
-            content = urllib.request.urlopen(URL, context=self.ssl_ctx, timeout=2)
+            content = urllib.request.urlopen(URL, context=self.ssl_ctx, timeout=5)
             self.content_type = content.info().get_content_type()
             self.http_status = content.getcode()
         except error.HTTPError as e:
@@ -110,7 +127,7 @@ class Extractor:
         self.robots_content = None
         self.sitemap_content = None
 
-        robot_parser = RobotFileParser(robots_url)
+        robot_parser = TimeoutRobotFileParser(robots_url)
         try:
             robot_parser.read()
             self.permission = robot_parser.can_fetch('fri-ieps-mCubed', URL)
