@@ -55,14 +55,14 @@ class Crawler:
                             break
                     if selected != None:
                         self.db.set_page_frontier_busy(cursor, selected[0])
-                        cur_link = selected[3]
+                        cur_link = (selected[0], selected[3])
                 if (cur_link == None):
                     print("sleeping...")
                     sleep(1)
                     continue
 
-                print(f'Selected URL: {cur_link}')
-                URL = get_canonical_URL(cur_link)
+                print(f'Selected URL: {cur_link[1]}')
+                URL = get_canonical_URL(cur_link[1])
 
                 IP = get_ip_from_URL(URL)
                 self._access_IP(IP)
@@ -71,12 +71,13 @@ class Crawler:
                 if extractor.permission:
                     self._insert_extractor_results(extractor, cursor)
 
-                    with self.master_lock:
-                        for link in extractor.extracted_urls:
-                            if get_hostname_from_URL(link).endswith('gov.si'):
-                                    if not self._check_page_exists(cursor, link):
-                                        self.db.insert_page_frontier(cursor, link)
-                                    self._insert_link(cursor, link, URL)
+                    for link in extractor.extracted_urls:
+                        if get_hostname_from_URL(link).endswith('gov.si'):
+                            if not self._check_page_exists(cursor, link):
+                                self.db.insert_page_frontier(cursor, link)
+                            self._insert_link(cursor, link, URL)
+                else:
+                    self.db.remove_page(cursor, cur_link[0])
 
                 if extractor.time_delay != None:
                     self.access_period[IP] = extractor.time_delay
@@ -110,47 +111,46 @@ class Crawler:
         prev_page_id = self.db.get_page_by_url(cursor, prev_url)
 
         if page_id != None and prev_page_id != None:    
-            if self.db.has_link(cursor, prev_page_id[0], page_id[0]):
+            if not self.db.has_link(cursor, prev_page_id[0], page_id[0]):
                 self.db.insert_link(cursor, prev_page_id[0], page_id[0])
 
     def _insert_extractor_results(self, extractor: Extractor, cursor: str):
         new_page = False
         page_id = None
-        with self.master_lock:
-            site_id = self.db.get_site_name(cursor, extractor.domain)
-            if site_id == None:
-                robots = extractor.robots_content
-                sitemap = extractor.sitemap_content
-                site_id = self.db.insert_site(cursor, extractor.domain, robots, sitemap)
-            else:
-                site_id = site_id[0]
+        site_id = self.db.get_site_name(cursor, extractor.domain)
+        if site_id == None:
+            robots = extractor.robots_content
+            sitemap = extractor.sitemap_content
+            site_id = self.db.insert_site(cursor, extractor.domain, robots, sitemap)
+        else:
+            site_id = site_id[0]
 
-            if extractor.content_hash != '':
-                page_id = self.db.get_page_by_hash(cursor, extractor.content_hash)
-            if page_id == None:
-                page_type = DB_Page_Types.HTML
-                if extractor.content_type != None and extractor.content_type != 'text/html':
-                    page_type = DB_Page_Types.BINARY
-                page_id = self.db.insert_page(
-                    cursor, 
-                    site_id, 
-                    page_type, 
-                    extractor.url, 
-                    extractor.content, 
-                    extractor.http_status, 
-                    extractor.accessed_time, 
-                    extractor.content_hash)
-                new_page = True
-            else:
-                page_id = self.db.insert_page(
-                    cursor, 
-                    site_id, 
-                    DB_Page_Types.DUPLICATE, 
-                    extractor.url, 
-                    '', 
-                    extractor.http_status, 
-                    extractor.accessed_time, 
-                    extractor.content_hash)
+        if extractor.content_hash != '':
+            page_id = self.db.get_page_by_hash(cursor, extractor.content_hash)
+        if page_id == None:
+            page_type = DB_Page_Types.HTML
+            if extractor.content_type != None and extractor.content_type != 'text/html':
+                page_type = DB_Page_Types.BINARY
+            page_id = self.db.insert_page(
+                cursor, 
+                site_id, 
+                page_type, 
+                extractor.url, 
+                extractor.content, 
+                extractor.http_status, 
+                extractor.accessed_time, 
+                extractor.content_hash)
+            new_page = True
+        else:
+            page_id = self.db.insert_page(
+                cursor, 
+                site_id, 
+                DB_Page_Types.DUPLICATE, 
+                extractor.url, 
+                '', 
+                extractor.http_status, 
+                extractor.accessed_time, 
+                extractor.content_hash)
 
         if new_page:
             page_values = []

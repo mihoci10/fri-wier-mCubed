@@ -50,6 +50,14 @@ class Database:
         except Exception as e:
             print(f"Error reseting frontier: {e}")
 
+    def remove_page(self, cursor, page_id):
+        sql = """DELETE FROM crawldb.page WHERE id = %s"""
+        record = (page_id,)
+        try:
+            cursor.execute(sql, record)
+        except Exception as e:
+            print(f"Error deleting 'page': {e}")
+
     # INSERT functions
     # most single row insert functions return the id of the inserted row, or -1 if error occurs
     # multiple row insert function return True if insert was successfull or False if error occurs
@@ -141,7 +149,7 @@ class Database:
             return -1
         
     def get_pages_frontier(self, cursor):
-        sql = """SELECT * FROM crawldb.page WHERE page_type_code = %s ORDER BY id LIMIT 1000"""
+        sql = """SELECT * FROM crawldb.page WHERE page_type_code = %s ORDER BY id"""
 
         try:
             cursor.execute(sql, (DB_Page_Types.FRONTIER,))

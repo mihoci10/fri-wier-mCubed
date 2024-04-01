@@ -11,13 +11,14 @@ from datetime import datetime
 import ssl
 
 class TimeoutRobotFileParser(RobotFileParser):
-    def __init__(self, url='', timeout=5):
+    def __init__(self, url='', ssl_ctx=None, timeout=5):
         super().__init__(url)
         self.timeout = timeout
+        self.ssl_ctx = ssl_ctx
 
     def read(self):
         try:
-            f = urllib.request.urlopen(self.url, timeout=self.timeout)
+            f = urllib.request.urlopen(self.url, timeout=self.timeout, context=self.ssl_ctx)
         except urllib.error.HTTPError as err:
             if err.code in (401, 403):
                 self.disallow_all = True
@@ -59,6 +60,7 @@ class Extractor:
         firefox_options.accept_insecure_certs=True
         
         self.driver = webdriver.Firefox(options=firefox_options)
+        self.driver.set_page_load_timeout(5)
 
     def run(self, URL: str) -> None:
         self._check_compliance(URL)
@@ -127,7 +129,7 @@ class Extractor:
         self.robots_content = None
         self.sitemap_content = None
 
-        robot_parser = TimeoutRobotFileParser(robots_url)
+        robot_parser = TimeoutRobotFileParser(robots_url, ssl_ctx=self.ssl_ctx)
         try:
             robot_parser.read()
             self.permission = robot_parser.can_fetch('fri-ieps-mCubed', URL)
