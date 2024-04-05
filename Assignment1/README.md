@@ -1,6 +1,6 @@
 # Project Description
 This project contains our implemented web crawler from Assignment 1. 
-- Source code of the crawler is located in the _src_ folder with classes _main.py_, which is the main file to run, _crawler.py_ which controls the whole webcrawling, extraction and queries to database, _extraction.py_ where the actual extraction happens, _database.py_ where different queries are written and file _utils.py_ which contains utility functions.
+- _src_ folder contains the source code of the crawler with classes _main.py_, which is the main file to run, _crawler.py_ which controls the whole webcrawling, extraction and queries to database, _extraction.py_ where the actual extraction happens, _database.py_ where different queries are written and file _utils.py_ which contains utility functions.
 - _db\_link.txt_ file contains a link to the crawldb databse dump (without images) custom file on MS OneDrive
 - _report.pdf_ file contains our written report of this Assignment
 
