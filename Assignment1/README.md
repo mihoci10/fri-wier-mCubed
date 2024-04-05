@@ -5,10 +5,9 @@ This project contains our implemented web crawler from Assignment 1.
 - _report.pdf_ file contains our written report of this Assignment
 
 # Crawler setup and run
-
-
-
-
+1. Install Python
+2. In the _Assignment1_ folder, run command `pip install -r requirements.txt` to install required libraries
+3. Go to _src_ folder and run command `python main.py` or just run _main.py_ file if you're using an IDE
 
 
 # Local Database and Docker Container Initialization
