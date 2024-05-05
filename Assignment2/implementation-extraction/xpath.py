@@ -1,4 +1,3 @@
-from parsel import Selector
 from lxml import etree
 import os
 import re
@@ -172,6 +171,3 @@ def get_html(filePath):
     with open(absolutePath, 'r', encoding='utf-8') as file:
         htmlContent = file.read()
         return htmlContent
-    
-
-xpath()
