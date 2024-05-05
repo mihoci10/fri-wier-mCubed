@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!-- saved from url=(0115)https://cache.betweendigital.com/code/bidder_18.html?USER_ID=a8c13c12-df28-5224-94b6-9247cb3afa43&CACHEBUSTER=26101 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+        <script>
+            var pixels = [];
+            var params = [];
+            function getURLParameter(name) {
+                return decodeURI(
+                    (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [,null])[1]
+                );
+            }
+                            params.push({key: "${USER_ID}", value: getURLParameter("USER_ID")});
+                            params.push({key: "${CACHEBUSTER}", value: getURLParameter("CACHEBUSTER")});
+                            params.push({key: "${BUYER_USER_ID}", value: getURLParameter("BUYER_USER_ID")});
+                                        pixels.push({type: 'image', url: ('https://x.bidswitch.net/sync?ssp=between')});
+                            pixels.push({type: 'image', url: ('https://sync.bumlam.com/?src=aid0')});
+                            pixels.push({type: 'iframe', url: ('https://secure-assets.rubiconproject.com/utils/xapi/multi-sync.html?p=btwnex&endpoint=eu')});
+                            pixels.push({type: 'image', url: ('https://www.tns-counter.ru/V13a****betweenx_ru/ru/CP1251/tmsec=betweenx_bx-ban-1/${CACHEBUSTER}')});
+                            pixels.push({type: 'image', url: ('https://x.bidswitch.net/sync?dsp_id=429&user_id=${USER_ID}&expires=60')});
+                            pixels.push({type: 'iframe', url: ('https://onetag-sys.com/usync/?pubId=5d1628750185ace')});
+                            pixels.push({type: 'image', url: ('https://ads.betweendigital.com/match?bidder_id=43554&callback_url=https%3A%2F%2Fan.yandex.ru%2Fmapuid%2Fbetweendigitalis%2F${USER_ID}')});
+                            pixels.push({type: 'image', url: ('https://t.adx.opera.com/sync?vendor=60079&uid=${USER_ID}')});
+                            pixels.push({type: 'image', url: ('https://cm-exchange.toast.com/pixel?cm_pid=1641267272&cm_puid=${USER_ID}&toast_push')});
+                            pixels.push({type: 'image', url: ('https://cookies.andbeyond.media/3b3bd4177dc9cc764d515f98ec9e416d.gif?puid=${USER_ID}')});
+                        window.onload = function () {
+                var elems = [];
+                for(var i=0; i<pixels.length; i++) {
+                    for(var n=0; n<params.length; n++) {
+                        if (params[n].value != "null") {
+                            pixels[i].url = pixels[i].url.replace(params[n].key, params[n].value);
+                        }
+                    }
+                    switch(pixels[i].type) {
+                        case "image":
+                            var elem = document.createElement("img");
+                            break;
+                        case "iframe":
+                            var elem = document.createElement("iframe");
+                            break;
+                        case "js":
+                            var elem = document.createElement("script");
+                            break;
+                    }
+                    elem.setAttribute("async", true);
+                    elems.push(elem);
+                }
+                var num = 0;
+
+                var start = function() {
+                    if(elems[num] !== undefined) {
+                        elems[num].id = "p"+num;
+                        document.body.appendChild(elems[num]);
+                        var cur = document.getElementById('p'+num);
+                        cur.onload = function() {num++; start()}
+                        cur.onerror = function() {num++; start()}
+                        cur.src = pixels[num].url;     
+                    }
+                }
+                
+                start();
+            }
+        </script>
+    </head>
+    <body>
+<img async="true" id="p0" src="./sync"><img async="true" id="p1" src="./saved_resource"><iframe async="true" id="p2" src="./multi-sync.html"></iframe><img async="true" id="p3" src="./26101"><img async="true" id="p4" src="./sync(1)"><iframe async="true" id="p5" src="./saved_resource(1).html"></iframe></body></html>
