@@ -101,21 +101,17 @@ def _get_tokens_optional(tokens1: list[tuple[str, str]], tokens2: list[tuple[str
         t2 = tokens2[i2]
 
         t1next = None
-        i1next = _get_next_token(tokens1, i1)
-        if i1next < len(tokens1):
-            t1next = tokens1[i1next]
+        if i1 < len(tokens1) - 1:
+            t1next = tokens1[i1 + 1]
         t2next = None
-        i2next = _get_next_token(tokens2, i2)
-        if i2next < len(tokens2):
-            t2next = tokens2[i2next]
+        if i2 < len(tokens2) - 1:
+            t2next = tokens2[i2 + 1]
 
         if t2next != None and _are_tokens_matching(t1, t2next, True):
             return (('option', t2[1]), None)
         elif t1next != None and _are_tokens_matching(t2, t1next, True):
             return (None, ('option', t1[1]))
-        elif t1next != None and t2next != None and _are_tokens_matching(t1next, t2next, True):
-            return ((i2next - i2, ('option', ('group', tokens2[i2:i2next]))), (i1next - i1, ('option', ('group', tokens1[i1:i1next]))))
-        
+
         return (None, None)
 
 def _execute(tokens1: list[tuple[str, str]], tokens2: list[tuple[str, str]], i1: int, i2: int, result: list[tuple[str, str]]):
@@ -145,12 +141,14 @@ def _execute(tokens1: list[tuple[str, str]], tokens2: list[tuple[str, str]], i1:
             endI = _get_iter_end(tokens2, i2)
             return _execute(tokens1, tokens2, i1, endI + 1, iter_wrapper2)
         
-        ((a, o1), (b, o2)) = _get_tokens_optional(tokens1, tokens2, i1, i2)
+        (o1, o2) = _get_tokens_optional(tokens1, tokens2, i1, i2)
 
         if o1 != None:
             result.append(o1)
+            return _execute(tokens1, tokens2, i1, i2 + 1, result)
         if o2 != None:
             result.append(o2)
+            return _execute(tokens1, tokens2, i1 + 1, i2, result)
         
         if a > 0 or b > 0:
             return _execute(tokens1, tokens2, i1 + b, i2 + a, result)
