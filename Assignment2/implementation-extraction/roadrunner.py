@@ -201,6 +201,58 @@ def run(page1, page2):
 
 
 def wrapper_with_roadrunner():
+
+    s1 = '''
+        <html>
+            Seznam prodajalca
+            <h1>Oseba 1</h1>
+            <img src="slikaprodajalca">
+            <ul>
+                <li>
+                    <b>Avto 1</b>
+                    Opis 1...
+                </li>
+                <li>
+                    <b>Avto 2</b>
+                    Opis 2...
+                </li>
+                <li>
+                    <b>Avto 3</b>
+                    Opis 3...
+                </li>
+            </ul>
+        </html>
+    '''
+    s2 = '''
+        <html>
+            Seznam prodajalca
+            <h1>Oseba 2</h1>
+            <ul>
+                <li>
+                    <b>Avto 1</b>
+                    Opis 1...
+                </li>
+                <li>
+                    <b>Avto 2</b>
+                    Opis 2...
+                </li>
+                <li>
+                    <b>Avto 3</b>
+                    Opis 3...
+                </li>
+                <li>
+                    <b>Avto 4</b>
+                    Opis 4...
+                </li>
+            </ul>
+        </html>
+
+    '''
+
+    wrapper = run(s1, s2)
+    print("\n--------------------------------Simple Example--------------------------------\n")
+    print(wrapper)
+    '''
     f1 = open('../input-extraction/overstock.com-roadrunner/jewelry01.html')
     f2 = open('../input-extraction/overstock.com-roadrunner/jewelry02.html')
 
@@ -210,6 +262,7 @@ def wrapper_with_roadrunner():
     wrapper = run(s1, s2)
     print("\n--------------------------------OVERSTOCK--------------------------------\n")
     print(wrapper)
+    '''
     '''
     f1 = open('../input-extraction/rtvslo.si/Volvo XC 40 D4 AWD momentum_ suvereno med najboljs╠îe v razredu - RTVSLO.si.html')
     f2 = open('../input-extraction/rtvslo.si/Audi A6 50 TDI quattro_ nemir v premijskem razredu - RTVSLO.si.html')
