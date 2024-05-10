@@ -4,22 +4,22 @@ import json
 
 def extract_with_regex():
     print("\n--------------------------------RTVSLO 1--------------------------------\n")
-    print (rtvslo_extract("rtvslo.si\Volvo XC 40 D4 AWD momentum_ suvereno med najboljše v razredu - RTVSLO.si.html"))
+    print (rtvslo_extract("../input-extraction/rtvslo.si/Volvo XC 40 D4 AWD momentum_ suvereno med najboljs╠îe v razredu - RTVSLO.si.html"))
     print("\n--------------------------------RTVSLO 2--------------------------------\n")
-    print(rtvslo_extract("rtvslo.si\Audi A6 50 TDI quattro_ nemir v premijskem razredu - RTVSLO.si.html"))
+    print(rtvslo_extract("../input-extraction/rtvslo.si/Audi A6 50 TDI quattro_ nemir v premijskem razredu - RTVSLO.si.html"))
 
     print("\n-------------------------------OVERSTOCK 1------------------------------\n")
-    product_info = overstock_extract_all("overstock.com\jewelry01.html")
+    product_info = overstock_extract_all("..\input-extraction\overstock.com\jewelry01.html")
     print(json.dumps(product_info, indent=4, ensure_ascii=False))
     print("\n-------------------------------OVERSTOCK 2------------------------------\n")
-    product_info = overstock_extract_all("overstock.com\jewelry02.html")
+    product_info = overstock_extract_all("..\input-extraction\overstock.com\jewelry02.html")
     print(json.dumps(product_info, indent=4, ensure_ascii=False))
 
     print("\n--------------------------------AVTONET 1-------------------------------\n")
-    extracted_json = avtonet_extract("avto.net\Audi RS4 2.9 TFSI quattro+CARBON+PANO+20COL+MATRIX+KOT NOV, letnik_2019,73990 EUR - prodam __ Avtonet __ www.Avto.net.html")
+    extracted_json = avtonet_extract("../input-extraction/avto.net/audi.html")
     print(extracted_json)
     print("\n--------------------------------AVTONET 2-------------------------------\n")
-    extracted_json = avtonet_extract("avto.net\BMW M3 , letnik_2017,61800 EUR - prodam __ Avtonet __ www.Avto.net.html")
+    extracted_json = avtonet_extract("../input-extraction/avto.net/BMW M3 , letnik_2017,61800 EUR - prodam __ Avtonet __ www.Avto.net.html")
     print(extracted_json)
 
 def avtonet_extract(file):
