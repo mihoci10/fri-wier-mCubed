@@ -1,0 +1,305 @@
+/* -------   Custom Radio  -------*/ 
+.GO-radio {
+  position: absolute;
+  display: none; 
+}
+.GO-radio + label {
+  position: relative;
+  display: block;
+  padding-left: 36px;
+  line-height: 28px;
+  cursor: pointer;
+  vertical-align: middle; 
+}
+.GO-radio + label i{
+  color: #6a829a;
+}
+.GO-radio + label:before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    content: '';
+    border: 1px solid #c0c0c0; 
+    border-radius: 50%; 
+}
+.GO-radio + label:after {
+    position: absolute;
+    display: none;
+    content: ''; 
+    top: 4px;
+    left: 4px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #F47A20;
+}
+/* -------   Radio Checked   -------*/ 
+.GO-radio:checked + label:before {
+  border: 1px solid #F47A20; 
+}
+.GO-radio:checked + label:after {
+  display: block; 
+}
+/* -------   Custom Checkbox  -------*/ 
+.GO-checkbox {
+  position: absolute;
+  display: none; 
+}
+.GO-checkbox + label {
+  position: relative;
+  display: block;
+  padding-left: 36px;
+  line-height: 28px;
+  cursor: pointer;
+  vertical-align: middle; 
+}
+.GO-checkbox + label i{
+  color: #6a829a;
+}
+.GO-checkbox + label p{
+  color: #000000;   
+  font-weight: normal;
+}
+.GO-checkbox + label:before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    content: '';
+    border: 1px solid #c0c0c0; 
+    border-radius: 0px; 
+}
+.GO-checkbox + label:after {
+    position: absolute;
+    display: none;
+    top: 2px;
+    left: 6px;
+    color: #FFFFFF;
+    font-size: 16px;
+    font-family: FontAwesome;
+    content: "\f00c"; 
+    /*content: ''; 
+    top: 4px;
+    left: 10px;
+    width: 7px;
+    height: 18px;
+    box-sizing: border-box;
+    transform: rotate(45deg);
+    border-width: 3px;
+    border-style: solid;
+    border-color: #fff;
+    border-top: 0;
+    border-left: 0; */
+    
+    
+}
+/* -------   Checkbox Checked   -------*/ 
+.GO-checkbox:checked + label:after {
+  display: block; 
+}
+.GO-checkbox:checked + label:before {
+  border: #3e97eb;
+  background: #F47A20; 
+}
+.GO-checkbox:checked + label i{
+  color: #F47A20;
+}
+/* -------   Custom Radiocolor  -------*/ 
+.GO-radiocolor {
+    position: absolute;
+    display: none; 
+}
+.GO-radiocolor + label {
+    position: relative;
+    display: block;
+    padding-left: 36px;
+    line-height: 28px;
+    cursor: pointer;
+    vertical-align: middle; 
+    font-weight: normal;
+}
+.GO-radiocolor + label:before {
+    position: absolute;
+    display: inline-block;
+    top: 0;
+    left: 0;
+    width: 28px;
+    height: 28px;
+    content: '';
+    border: 0px solid #c0c0c0; 
+    border-radius: 50%; 
+    background-color: #CCC;
+}
+.GO-radiocolor + label:after {
+    position: absolute;
+    display: none;
+    font-family: FontAwesome;
+    content: "\f00c"; 
+    /*content: ''; */
+    top: 2px;
+    left: 6px;
+    border-radius: 50%;
+    color: #FFFFFF;
+    font-size: 16px;
+}
+/* -------   Radiocolor Checked   -------*/ 
+.GO-radiocolor:checked + label:before {
+  border: none; 
+}
+.GO-radiocolor:checked + label:after {
+  display: block; 
+}
+/* -------  Radio Color BLACK -------*/ 
+.GO-radiocolor_black + label:before {
+  background-color: #000;
+}
+/* -------  Radio Color WHITE -------*/ 
+.GO-radiocolor_white + label:before {
+  background-color: #FFF;
+  border: 1px solid #c0c0c0; 
+}
+.GO-radiocolor_white:checked + label:after {
+  color: #000;
+}
+/* -------  Radio Color RED -------*/ 
+.GO-radiocolor_red + label:before {
+  background-color: red;
+}
+/* -------  Radio Color BLUE -------*/ 
+.GO-radiocolor_blue + label:before {
+  background-color: blue;
+}
+/* -------  Radio Color GREY -------*/ 
+.GO-radiocolor_grey + label:before {
+  background-color: grey;
+}
+/* -------  Radio Color YELLOW -------*/ 
+.GO-radiocolor_yellow + label:before {
+  background-color: yellow;
+}
+.GO-radiocolor_yellow:checked + label:after {
+  color: #000;
+}
+/* -------  Radio Color GREEN -------*/ 
+.GO-radiocolor_green + label:before {
+  background-color: green;
+}
+/* -------  Radio Color SILVER -------*/ 
+.GO-radiocolor_silver + label:before {
+  background: linear-gradient(to bottom right, #ffffff 30%, #bebebe 80%);
+}
+.GO-radiocolor_silver:checked + label:after {
+  color: #000;
+}
+/* -------  Radio Color BEIGE -------*/ 
+.GO-radiocolor_beige + label:before {
+  background: linear-gradient(to bottom right, #c8c8b4 30%, #f5f5dc 80%);
+}
+/* -------  Radio Color BROWN -------*/ 
+.GO-radiocolor_brown + label:before {
+  background: linear-gradient(to bottom right, #654321 30%, #83572b 80%);
+}
+/* -------  Radio Color ANY EXT -------*/ 
+.GO-radiocolor_any + label:before {
+  background: linear-gradient(to bottom right, #ffff00 20%, #0000ff 90%);
+}
+/* -------  Radio Color ANY INT -------*/ 
+.GO-radiocolor_anyint + label:before {
+  background: linear-gradient(to bottom right, #f5f5dc 20%, #000000 90%);
+}
+/* -------   Custom Checkbox BodyType  -------*/ 
+.GO-bodytype + label {
+    padding-left: 0px;
+    line-height: 18px;
+}
+.GO-bodytype + label i{
+    padding-left: 28px;
+}
+.GO-bodytype + label p{
+    padding-left: 28px;
+}
+.GO-bodytype + label:before {
+    top: 20px;
+}
+.GO-bodytype + label:after {
+    top: 26px;
+}
+/* -------   Custom Radio BodyType  -------*/ 
+.GO-radio-bodytype + label {
+    padding-left: 0px;
+    line-height: 18px;
+}
+.GO-radio-bodytype + label i{
+    padding-left: 28px;
+}
+.GO-radio-bodytype + label p{
+    padding-left: 28px;
+    color: #000000;   
+    font-weight: normal;
+}
+.GO-radio-bodytype + label:before {
+    top: 20px !important;
+}
+.GO-radio-bodytype + label:after {
+    top: 24px !important;
+}
+.GO-radio-bodytype:checked + label i{
+  color: #F47A20;
+}
+
+/* -------   Custom CheckboxNEW  -------*/ 
+.GO-checkboxNEW {
+  position: absolute;
+  display: none; 
+}
+.GO-checkboxNEW + label {
+  position: relative;
+  display: block;
+  padding-left: 0px;
+  line-height: 18px;
+  cursor: pointer;
+}
+.GO-checkboxNEW + label i{
+  color: #6a829a;
+}
+.GO-checkboxNEW + label p{
+  color: #000000;   
+  font-weight: normal;
+}
+.GO-checkboxNEW + label:before {
+    position: absolute;
+    top: 0px;
+    left: 65px;
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    content: '';
+    border: 1px solid #c0c0c0; 
+    border-radius: 0px; 
+}
+.GO-checkboxNEW + label:after {
+    position: absolute;
+    display: none;
+    top: 4px;
+    left: 71px;
+    color: #FFFFFF;
+    font-size: 16px;
+    font-family: FontAwesome;
+    content: "\f00c"; 
+}
+/* -------   CheckboxNEW Checked   -------*/ 
+.GO-checkboxNEW:checked + label:after {
+  display: block; 
+}
+.GO-checkboxNEW:checked + label:before {
+  border: #3e97eb;
+  background: #F47A20; 
+}
+.GO-checkboxNEW:checked + label i{
+  color: #F47A20;
+}

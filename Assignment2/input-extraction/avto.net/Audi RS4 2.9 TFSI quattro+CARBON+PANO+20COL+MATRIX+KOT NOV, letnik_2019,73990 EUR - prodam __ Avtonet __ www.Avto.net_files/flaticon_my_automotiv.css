@@ -1,0 +1,346 @@
+@charset "UTF-8";
+@font-face {
+  font-family: "flaticon_my_automotive";
+  src: url("./flaticon_my_automotive.ttf?bab1c388836cb80c2f72647a60bda171") format("truetype"), url("./flaticon_my_automotive.woff?bab1c388836cb80c2f72647a60bda171") format("woff"), url("./flaticon_my_automotive.woff2?bab1c388836cb80c2f72647a60bda171") format("woff2"), url("./flaticon_my_automotive.eot?bab1c388836cb80c2f72647a60bda171#iefix") format("embedded-opentype"), url("./flaticon_my_automotive.svg?bab1c388836cb80c2f72647a60bda171#flaticon_my_automotive") format("svg"); }
+i[class^="flaticon-"]:before, i[class*=" flaticon-"]:before {
+  font-family: flaticon_my_automotive !important;
+  font-style: normal;
+  font-weight: normal !important;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
+
+.flaticon-001-ruler:before {
+  content: ""; }
+
+.flaticon-002-weight:before {
+  content: ""; }
+
+.flaticon-003-gauge:before {
+  content: ""; }
+
+.flaticon-004-belt:before {
+  content: ""; }
+
+.flaticon-005-gearshift:before {
+  content: ""; }
+
+.flaticon-006-gas-station:before {
+  content: ""; }
+
+.flaticon-007-piston:before {
+  content: ""; }
+
+.flaticon-008-speedometer:before {
+  content: ""; }
+
+.flaticon-009-bed:before {
+  content: ""; }
+
+.flaticon-010-gasoline-pump:before {
+  content: ""; }
+
+.flaticon-011-calendar:before {
+  content: ""; }
+
+.flaticon-012-gearbox:before {
+  content: ""; }
+
+.flaticon-013-gearbox-1:before {
+  content: ""; }
+
+.flaticon-014-gas-station-1:before {
+  content: ""; }
+
+.flaticon-015-car:before {
+  content: ""; }
+
+.flaticon-016-gas-station-2:before {
+  content: ""; }
+
+.flaticon-017-set-square:before {
+  content: ""; }
+
+.flaticon-018-car-repair:before {
+  content: ""; }
+
+.flaticon-019-car-1:before {
+  content: ""; }
+
+.flaticon-020-ruler-1:before {
+  content: ""; }
+
+.flaticon-021-ruler-2:before {
+  content: ""; }
+
+.flaticon-022-fuel-station:before {
+  content: ""; }
+
+.flaticon-023-fuel-station-1:before {
+  content: ""; }
+
+.flaticon-024-speedometer-1:before {
+  content: ""; }
+
+.flaticon-025-gasoline:before {
+  content: ""; }
+
+.flaticon-026-rest:before {
+  content: ""; }
+
+.flaticon-027-maintenance:before {
+  content: ""; }
+
+.flaticon-028-gasoline-1:before {
+  content: ""; }
+
+.flaticon-029-time:before {
+  content: ""; }
+
+.flaticon-030-oil:before {
+  content: ""; }
+
+.flaticon-031-gearbox-2:before {
+  content: ""; }
+
+.flaticon-032-speedometer-2:before {
+  content: ""; }
+
+.flaticon-033-days:before {
+  content: ""; }
+
+.flaticon-034-calendar-with-spring-binder-and-date-blocks:before {
+  content: ""; }
+
+.flaticon-035-odometer-for-kilometers-and-speed-control:before {
+  content: ""; }
+
+.flaticon-036-calendar-1:before {
+  content: ""; }
+
+.flaticon-037-road-with-broken-line:before {
+  content: ""; }
+
+.flaticon-038-gas-station-3:before {
+  content: ""; }
+
+.flaticon-039-weight-1:before {
+  content: ""; }
+
+.flaticon-040-time-1:before {
+  content: ""; }
+
+.flaticon-041-vehicle:before {
+  content: ""; }
+
+.flaticon-042-gearbox-3:before {
+  content: ""; }
+
+.flaticon-043-speedometer-3:before {
+  content: ""; }
+
+.flaticon-044-vehicle-1:before {
+  content: ""; }
+
+.flaticon-045-gas-station-4:before {
+  content: ""; }
+
+.flaticon-046-dashboard:before {
+  content: ""; }
+
+.flaticon-047-dashboard-1:before {
+  content: ""; }
+
+.flaticon-048-dashboard-2:before {
+  content: ""; }
+
+.flaticon-049-engine:before {
+  content: ""; }
+
+.flaticon-050-furniture:before {
+  content: ""; }
+
+.flaticon-051-gas-station-5:before {
+  content: ""; }
+
+.flaticon-052-dashboard-3:before {
+  content: ""; }
+
+.flaticon-053-transport:before {
+  content: ""; }
+
+.flaticon-054-engine-1:before {
+  content: ""; }
+
+.flaticon-055-weight-2:before {
+  content: ""; }
+
+.flaticon-056-gas-station-6:before {
+  content: ""; }
+
+.flaticon-057-tire:before {
+  content: ""; }
+
+.flaticon-058-wheels:before {
+  content: ""; }
+
+.flaticon-059-alloy-wheel:before {
+  content: ""; }
+
+.flaticon-060-car-door:before {
+  content: ""; }
+
+.flaticon-061-car-door-1:before {
+  content: ""; }
+
+.flaticon-062-oil-gauge:before {
+  content: ""; }
+
+.flaticon-063-dial:before {
+  content: ""; }
+
+.flaticon-064-stopwatch:before {
+  content: ""; }
+
+.flaticon-065-stopwatch-1:before {
+  content: ""; }
+
+.flaticon-066-chronograph-watch:before {
+  content: ""; }
+
+.flaticon-067-stopwatch-2:before {
+  content: ""; }
+
+.flaticon-068-eco:before {
+  content: ""; }
+
+.flaticon-069-eco-1:before {
+  content: ""; }
+
+.flaticon-070-car-door-2:before {
+  content: ""; }
+
+.flaticon-071-car-door-3:before {
+  content: ""; }
+
+.flaticon-072-car-door-4:before {
+  content: ""; }
+
+.flaticon-073-car-2:before {
+  content: ""; }
+
+.flaticon-074-car-engine:before {
+  content: ""; }
+
+.flaticon-075-engine-2:before {
+  content: ""; }
+
+.flaticon-076-gearshift-1:before {
+  content: ""; }
+
+.flaticon-077-gearshift-2:before {
+  content: ""; }
+
+.flaticon-078-gearshift-3:before {
+  content: ""; }
+
+.flaticon-079-gearbox-4:before {
+  content: ""; }
+
+.flaticon-080-gearbox-5:before {
+  content: ""; }
+
+.flaticon-081-shifter:before {
+  content: ""; }
+
+.flaticon-082-shifter-1:before {
+  content: ""; }
+
+.flaticon-083-gearbox-6:before {
+  content: ""; }
+
+.flaticon-084-manual-transmission:before {
+  content: ""; }
+
+.flaticon-085-price-tag:before {
+  content: ""; }
+
+.flaticon-086-tag:before {
+  content: ""; }
+
+.flaticon-087-speedometer-4:before {
+  content: ""; }
+
+.flaticon-088-speedometer-5:before {
+  content: ""; }
+
+.flaticon-089-speedometer-6:before {
+  content: ""; }
+
+.flaticon-090-speedometer-7:before {
+  content: ""; }
+
+.flaticon-091-gas:before {
+  content: ""; }
+
+.flaticon-092-fuel:before {
+  content: ""; }
+
+.flaticon-093-fuel-1:before {
+  content: ""; }
+
+.flaticon-094-fuel-2:before {
+  content: ""; }
+
+.flaticon-095-motor:before {
+  content: ""; }
+
+.flaticon-096-charging-station:before {
+  content: ""; }
+
+.flaticon-097-battery:before {
+  content: ""; }
+
+.flaticon-098-360-degrees:before {
+  content: ""; }
+
+.flaticon-099-scroll:before {
+  content: ""; }
+
+.flaticon-100-drag:before {
+  content: ""; }
+
+.flaticon-101-computer-mouse:before {
+  content: ""; }
+
+.flaticon-102-mouse:before {
+  content: ""; }
+
+.flaticon-103-road:before {
+  content: ""; }
+
+.flaticon-104-work-tools:before {
+  content: ""; }
+
+.flaticon-105-road-1:before {
+  content: ""; }
+
+.flaticon-106-businessman:before {
+  content: ""; }
+
+.flaticon-107-man:before {
+  content: ""; }
+
+.flaticon-108-automobile-salesman:before {
+  content: ""; }
+
+.flaticon-109-car-dealer:before {
+  content: ""; }
+
+.flaticon-110-owner:before {
+  content: ""; }
+
+.flaticon-111-hybrid-car:before {
+  content: ""; }
