@@ -90,21 +90,31 @@ def _get_tokens_iterative(tokens: list[tuple[str, str]], i, wrapper: list[tuple[
             
             return _join_wrappers(wrapper, iter_wrapper, t[1])
         
+def _get_next_token(tokens: list[tuple[str, str]], i):
+    if tokens[i][0] == 'start':
+        return _get_iter_end(tokens, i) + 1
+    else:
+        return i + 1
+        
 def _get_tokens_optional(tokens1: list[tuple[str, str]], tokens2: list[tuple[str, str]], i1, i2):
         t1 = tokens1[i1]
         t2 = tokens2[i2]
 
         t1next = None
-        if i1 < len(tokens1) - 1:
-            t1next = tokens1[i1 + 1]
+        i1next = _get_next_token(tokens1, i1)
+        if i1next < len(tokens1):
+            t1next = tokens1[i1next]
         t2next = None
-        if i2 < len(tokens2) - 1:
-            t2next = tokens2[i2 + 1]
+        i2next = _get_next_token(tokens2, i2)
+        if i2next < len(tokens2):
+            t2next = tokens2[i2next]
 
         if t2next != None and _are_tokens_matching(t1, t2next, True):
             return (('option', t2[1]), None)
         elif t1next != None and _are_tokens_matching(t2, t1next, True):
             return (None, ('option', t1[1]))
+        elif t1next != None and t2next != None and _are_tokens_matching(t1next, t2next, True):
+            return ((i2next - i2, ('option', ('group', tokens2[i2:i2next]))), (i1next - i1, ('option', ('group', tokens1[i1:i1next]))))
         
         return (None, None)
 
@@ -135,14 +145,15 @@ def _execute(tokens1: list[tuple[str, str]], tokens2: list[tuple[str, str]], i1:
             endI = _get_iter_end(tokens2, i2)
             return _execute(tokens1, tokens2, i1, endI + 1, iter_wrapper2)
         
-        (o1, o2) = _get_tokens_optional(tokens1, tokens2, i1, i2)
+        ((a, o1), (b, o2)) = _get_tokens_optional(tokens1, tokens2, i1, i2)
 
         if o1 != None:
             result.append(o1)
-            return _execute(tokens1, tokens2, i1, i2 + 1, result)
         if o2 != None:
             result.append(o2)
-            return _execute(tokens1, tokens2, i1 + 1, i2, result)
+        
+        if a > 0 or b > 0:
+            return _execute(tokens1, tokens2, i1 + b, i2 + a, result)
         
 def _parse_results(results, inset=0):
     result = ''
@@ -179,44 +190,10 @@ def run(page1, page2):
 
     return(_parse_results(result))
 
-run('''
-<HTML>
-Books of:
-<B>
-John Smith
-</B>
-<UL>
-<LI>
-<I>Title:</I>
-DB Primer
-</LI>
-<LI>
-<I>Title:</I>
-Comp. Sys.
-</LI>
-</UL>
-</HTML>
-''',
-'''
-<HTML>
-Books of:
-<B>
-Paul Jones
-</B>
-<IMG src=.../>
-<UL>
-<LI>
-<I>Title:</I>
-XML at Work
-</LI>
-<LI>
-<I>Title:</I>
-HTML Scripts
-</LI>
-<LI>
-<I>Title:</I>
-Javascript
-</LI>
-</UL>
-</HTML>
-''')
+f1 = open('Assignment2/input-extraction/overstock.com/jewelry01.html')
+f2 = open('Assignment2/input-extraction/overstock.com/jewelry02.html')
+
+s1 = '\n'.join(f1.readlines())
+s2 = '\n'.join(f2.readlines())
+
+run(s1, s2)
