@@ -1,5 +1,6 @@
 from datetime import datetime
 import psycopg2
+import psycopg2.extras
 from psycopg2 import OperationalError
 from psycopg2.extensions import AsIs
 from enum import Enum
@@ -51,6 +52,15 @@ class Database:
             print(f"Error reseting frontier: {e}")
 
     def remove_page(self, cursor, page_id):
+        try:
+            cursor.execute("""DELETE FROM crawldb.link WHERE from_page = %s""", (page_id,))
+        except Exception as e:
+            print(f"Error deleting 'link': {e}")
+        try:
+            cursor.execute("""DELETE FROM crawldb.link WHERE to_page = %s""", (page_id,))
+        except Exception as e:
+            print(f"Error deleting 'link': {e}")
+
         sql = """DELETE FROM crawldb.page WHERE id = %s"""
         record = (page_id,)
         try:
@@ -231,7 +241,7 @@ class Database:
         records = values
 
         try:
-            cursor.executemany(sql, records)
+            psycopg2.extras.execute_batch(cursor, sql, records)
             return True
         except Exception as e:
             print(f"Error inserting 'image': {e}")
@@ -239,20 +249,13 @@ class Database:
 
     def insert_link(self, cursor, from_page: int, to_page: int) -> bool:
         sql = """INSERT INTO crawldb.link (from_page, to_page) VALUES(%s, %s)"""
-
-        page_ids = tuple(set((from_page, to_page))) # take only unique elements
-        page_ids_ok = self.check_page_ids(cursor, page_ids)
-        if(not page_ids_ok):
-            print("Error inserting 'link', page with given page_id does not exist.")
-            return False
-        
         record = (from_page, to_page)
 
         try:
             cursor.execute(sql, record)
             return True
         except Exception as e:
-            print(f"Error inserting 'link': {e}")
+            #print(f"Error inserting 'link': {e}")
             return False
         
     def has_link(self, cursor, from_page: int, to_page: int) -> bool:
@@ -268,20 +271,12 @@ class Database:
         
     def insert_link_many(self, cursor, values: list[tuple[int, int]]) -> bool:
         sql = """INSERT INTO crawldb.link (from_page, to_page) VALUES(%s, %s)"""
-
-        page_ids = tuple(set(tuple(page_id for tpl in values for page_id in tpl))) # take only unique elements
-        page_ids_ok = self.check_page_ids(cursor, page_ids)
-        if(not page_ids_ok):
-            print("Error inserting 'image', page with given page_id does not exist.")
-            return False
-        
         records = values
 
         try:
-            cursor.executemany(sql, records)
+            psycopg2.extras.execute_batch(cursor, sql, records)
             return True
         except Exception as e:
-            print(f"Error inserting 'link': {e}")
             return False
     
     def insert_page_data(self, cursor, page_id: int, data_type_code: str, data: bytes) -> int:
@@ -323,7 +318,7 @@ class Database:
         records = values
 
         try:
-            cursor.executemany(sql, records)
+            psycopg2.extras.execute_batch(cursor, sql, records)
             return True
         except Exception as e:
             print(f"Error inserting 'page_data': {e}")

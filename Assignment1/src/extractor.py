@@ -30,7 +30,7 @@ class TimeoutRobotFileParser(RobotFileParser):
 
 class Extractor:
 
-    def __init__(self, load_time: float = 5) -> None:
+    def __init__(self, load_time: float = 3) -> None:
         self.load_time: float = load_time
         self._init_driver()
 

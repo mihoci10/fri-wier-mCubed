@@ -71,11 +71,21 @@ class Crawler:
                 if extractor.permission:
                     self._insert_extractor_results(extractor, cursor)
 
+                    page_links = []
                     for link in extractor.extracted_urls:
                         if get_hostname_from_URL(link).endswith('gov.si'):
-                            if not self._check_page_exists(cursor, link):
-                                self.db.insert_page_frontier(cursor, link)
-                            self._insert_link(cursor, link, URL)
+                            link_page = self.db.get_page_by_url(cursor, link)
+                            if link_page == None:
+                                page_id = self.db.insert_page_frontier(cursor, link)
+                            else:
+                                page_id = link_page[0]
+
+                            if (cur_link[0], page_id) not in page_links and not self.db.has_link(cursor, cur_link[0], page_id):
+                                page_links.append((cur_link[0], page_id))
+                    
+                    if len(page_links) > 0:
+                        self.db.insert_link_many(cursor, page_links)
+
                 else:
                     self.db.remove_page(cursor, cur_link[0])
 
@@ -105,14 +115,6 @@ class Crawler:
     def _check_page_exists(self, cursor, URL:str):
         page = self.db.get_page_by_url(cursor, URL)
         return page != None
-
-    def _insert_link(self, cursor, cur_url:str, prev_url:str):
-        page_id = self.db.get_page_by_url(cursor, cur_url)
-        prev_page_id = self.db.get_page_by_url(cursor, prev_url)
-
-        if page_id != None and prev_page_id != None:    
-            if not self.db.has_link(cursor, prev_page_id[0], page_id[0]):
-                self.db.insert_link(cursor, prev_page_id[0], page_id[0])
 
     def _insert_extractor_results(self, extractor: Extractor, cursor: str):
         new_page = False
