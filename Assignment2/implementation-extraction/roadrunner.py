@@ -150,9 +150,6 @@ def _execute(tokens1: list[tuple[str, str]], tokens2: list[tuple[str, str]], i1:
             result.append(o2)
             return _execute(tokens1, tokens2, i1 + 1, i2, result)
         
-        if a > 0 or b > 0:
-            return _execute(tokens1, tokens2, i1 + b, i2 + a, result)
-        
 def _parse_results(results, inset=0):
     result = ''
     for token in results:
@@ -188,10 +185,50 @@ def run(page1, page2):
 
     return(_parse_results(result))
 
-f1 = open('Assignment2/input-extraction/overstock.com/jewelry01.html')
-f2 = open('Assignment2/input-extraction/overstock.com/jewelry02.html')
+def run(page1, page2):
 
-s1 = '\n'.join(f1.readlines())
-s2 = '\n'.join(f2.readlines())
+    parser1 = CustomParser()
+    parser1.feed(page1)
+    tokens1 = parser1.tokens
 
-run(s1, s2)
+    parser2 = CustomParser()
+    parser2.feed(page2)
+    tokens2 = parser2.tokens
+
+    result = _execute(tokens1, tokens2, 0, 0, [])
+
+    return(_parse_results(result))
+
+
+def wrapper_with_roadrunner():
+    f1 = open('../input-extraction/overstock.com-roadrunner/jewelry01.html')
+    f2 = open('../input-extraction/overstock.com-roadrunner/jewelry02.html')
+
+    s1 = '\n'.join(f1.readlines())
+    s2 = '\n'.join(f2.readlines())
+
+    wrapper = run(s1, s2)
+    print("\n--------------------------------OVERSTOCK--------------------------------\n")
+    print(wrapper)
+    '''
+    f1 = open('../input-extraction/rtvslo.si/Volvo XC 40 D4 AWD momentum_ suvereno med najboljs╠îe v razredu - RTVSLO.si.html')
+    f2 = open('../input-extraction/rtvslo.si/Audi A6 50 TDI quattro_ nemir v premijskem razredu - RTVSLO.si.html')
+
+    s1 = '\n'.join(f1.readlines())
+    s2 = '\n'.join(f2.readlines())
+
+    wrapper = run(s1, s2)
+    print("\n--------------------------------RTVSLO--------------------------------\n")
+    print(wrapper)
+    '''
+    '''
+    f1 = open('Assignment2/input-extraction/avto.net/audi.html')
+    f2 = open('Assignment2/input-extraction/avto.net/BMW M3 , letnik_2017,61800 EUR - prodam __ Avtonet __ www.Avto.net.html')
+
+    s1 = '\n'.join(f1.readlines())
+    s2 = '\n'.join(f2.readlines())
+
+    wrapper = run(s1, s2)
+    print("\n--------------------------------AVTONET--------------------------------\n")
+    print(wrapper)
+    '''

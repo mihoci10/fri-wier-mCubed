@@ -9,10 +9,10 @@ def extract_with_regex():
     print(rtvslo_extract("../input-extraction/rtvslo.si/Audi A6 50 TDI quattro_ nemir v premijskem razredu - RTVSLO.si.html"))
 
     print("\n-------------------------------OVERSTOCK 1------------------------------\n")
-    product_info = overstock_extract_all("..\input-extraction\overstock.com\jewelry01.html")
+    product_info = overstock_extract_all("../input-extraction/overstock.com/jewelry01.html")
     print(json.dumps(product_info, indent=4, ensure_ascii=False))
     print("\n-------------------------------OVERSTOCK 2------------------------------\n")
-    product_info = overstock_extract_all("..\input-extraction\overstock.com\jewelry02.html")
+    product_info = overstock_extract_all("../input-extraction/overstock.com/jewelry02.html")
     print(json.dumps(product_info, indent=4, ensure_ascii=False))
 
     print("\n--------------------------------AVTONET 1-------------------------------\n")

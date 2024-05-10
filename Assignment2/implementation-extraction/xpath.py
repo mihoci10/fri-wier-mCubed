@@ -4,34 +4,33 @@ import re
 import json
 
 # XPath implementation
-# open webpage -> inspect an element -> right click on element in elements tab -> copy -> copy to XPath -> paste to text
-def xpath():
+def extract_with_xpath():
 
     
     print("\n--------------------------------RTVSLO 1--------------------------------\n")
-    rtvslo("Assignment2/input-extraction/rtvslo.si/Audi A6 50 TDI quattro_ nemir v premijskem razredu - RTVSLO.si.html")
+    rtvslo("../input-extraction/rtvslo.si/Audi A6 50 TDI quattro_ nemir v premijskem razredu - RTVSLO.si.html")
     print("\n--------------------------------RTVSLO 2--------------------------------\n")
-    rtvslo("Assignment2/input-extraction/rtvslo.si/Volvo XC 40 D4 AWD momentum_ suvereno med najboljs╠îe v razredu - RTVSLO.si.html")
+    rtvslo("../input-extraction/rtvslo.si/Volvo XC 40 D4 AWD momentum_ suvereno med najboljs╠îe v razredu - RTVSLO.si.html")
     
 
     print("\n-------------------------------OVERSTOCK 1------------------------------\n")
-    overstock("Assignment2/input-extraction/overstock.com/jewelry01.html")
+    overstock("../input-extraction/overstock.com/jewelry01.html")
     print("\n-------------------------------OVERSTOCK 2------------------------------\n")
-    overstock("Assignment2/input-extraction/overstock.com/jewelry02.html")
+    overstock("../input-extraction/overstock.com/jewelry02.html")
 
     print("\n--------------------------------AVTONET 1-------------------------------\n")
-    avtonet("Assignment2/input-extraction/avto.net/Audi RS4 2.9 TFSI quattro+CARBON+PANO+20COL+MATRIX+KOT NOV, letnik_2019,73990 EUR - prodam __ Avtonet __ www.Avto.net.html")
+    avtonet("../input-extraction/avto.net/audi.html")
     print("\n--------------------------------AVTONET 2-------------------------------\n")
-    avtonet("Assignment2/input-extraction/avto.net/BMW M3 , letnik_2017,61800 EUR - prodam __ Avtonet __ www.Avto.net.html")
+    avtonet("../input-extraction/avto.net/BMW M3 , letnik_2017,61800 EUR - prodam __ Avtonet __ www.Avto.net.html")
 
 
 def rtvslo(filePath):
-    #html = get_html(filePath)
-    absolutePath = os.path.abspath(filePath)
-    with open(absolutePath, 'r', encoding='utf-8') as file:
+    #absolutePath = os.path.abspath(filePath)
+    currentDir = os.path.dirname(__file__)
+    fullPath = os.path.join(currentDir, filePath)
+    with open(fullPath, 'r', encoding='utf-8') as file:
         htmlContent = file.read()
 
-    # sel = Selector(htmlContent)
     tree = etree.HTML(htmlContent)
 
     author = tree.xpath("//div[@class='author-name']/text()")[0] # !
@@ -54,14 +53,14 @@ def rtvslo(filePath):
     data["Subtitle"] = subTitle
     data["Lead"] = lead
     data["Content"] = contentList
-    json_data = json.dumps(data, indent=4, ensure_ascii=False)
-    print(json_data)
+    jsonData = json.dumps(data, indent=4, ensure_ascii=False)
+    print(jsonData)
 
 
 def overstock(filePath):
-    #html = get_html(filePath)
-    absolutePath = os.path.abspath(filePath)
-    with open(absolutePath, 'r') as file:
+    currentDir = os.path.dirname(__file__)
+    fullPath = os.path.join(currentDir, filePath)
+    with open(fullPath, 'r') as file:
         htmlContent = file.read()
 
     tree = etree.HTML(htmlContent)
@@ -85,13 +84,14 @@ def overstock(filePath):
             content = re.sub(r'\n', ' ', content)
             data.append({"Title": title, "ListPrice": listPrice, "Price": price, "Saving": saving, "SavingPercent": savingPercent, "Content": content})
 
-    json_data = json.dumps(data, indent=4)
-    print(json_data)
+    jsonData = json.dumps(data, indent=4)
+    print(jsonData)
 
 
 def avtonet(filePath):
-    absolutePath = os.path.abspath(filePath)
-    with open(absolutePath, 'r') as file:
+    currentDir = os.path.dirname(__file__)
+    fullPath = os.path.join(currentDir, filePath)
+    with open(fullPath, 'r') as file:
         htmlContent = file.read()
 
     tree = etree.HTML(htmlContent)
@@ -161,13 +161,5 @@ def avtonet(filePath):
     data["Content"] = contentDict
     data["Price"] = price
 
-    json_data = json.dumps(data, indent=4, ensure_ascii=False)
-    print(json_data)
-
-
-def get_html(filePath):
-    absolutePath = os.path.abspath(filePath)
-    #absolutePath = "../input-extraction/rtvslo.si/Audi A6 50 TDI quattro_ nemir v premijskem razredu - RTVSLO.si.html"
-    with open(absolutePath, 'r', encoding='utf-8') as file:
-        htmlContent = file.read()
-        return htmlContent
+    jsonData = json.dumps(data, indent=4, ensure_ascii=False)
+    print(jsonData)

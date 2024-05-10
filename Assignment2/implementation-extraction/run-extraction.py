@@ -3,6 +3,8 @@ import sys
 import re
 import json
 import regexWier
+import xpath
+import roadrunner
 
 
 def extract_with_algorithm_a():
@@ -10,11 +12,13 @@ def extract_with_algorithm_a():
     input("Press enter to exit")
 
 def extract_with_algorithm_b():
-    return "Data extracted with Algorithm B"
+    xpath.extract_with_xpath()
+    input("Press enter to exit")
 
 
 def extract_with_algorithm_c():
-    return "Data extracted with Algorithm C"
+    roadrunner.wrapper_with_roadrunner()
+    input("Press enter to exit")
 
 
 def main():
